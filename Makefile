@@ -1,8 +1,9 @@
 TEMP_FOLDER = temp
 MOUNT_FOLDER = mnt
+C_HEADERS = includes
 FS_IMG = fs.img
 
-PROG_DIRS = $(filter-out $(TEMP_FOLDER)/ $(MOUNT_FOLDER)/, $(dir $(wildcard */.)))
+PROG_DIRS = $(filter-out $(TEMP_FOLDER)/ $(MOUNT_FOLDER)/ $(C_HEADERS)/, $(dir $(wildcard */.)))
 PROG_NAME = $(foreach SRC, $(PROG_DIRS), $(patsubst %/, %, $(SRC)))
 PROG_BINS = $(foreach NAME, $(PROG_NAME), $(TEMP_FOLDER)/$(NAME))
 
