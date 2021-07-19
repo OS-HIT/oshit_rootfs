@@ -2,7 +2,7 @@
 #define __DEBUG_H__
 
 #include <assert.h>
-#define DEBUG_ON
+// #define DEBUG_ON
 #define Log_color(format, ...) \
     printf("\33[1;34m[%s,%d,%s] " format "\33[0m\n", \
         __FILE__, __LINE__, __func__, ## __VA_ARGS__)

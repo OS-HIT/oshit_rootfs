@@ -4,14 +4,14 @@ struct rtcdate;
 // system calls
 int fork(void);
 int exit(int) __attribute__((noreturn));
-int wait(int*);
+int waitpid(int, int*, int);
 int pipe(int*);
 int write(int, const void*, int);
 int read(int, void*, int);
 int close(int);
 int kill(int);
 int exec(char*, char**);
-int open(const char*, int);
+int open_naive(int, const char*, int);
 int mknod(const char*, short, short);
 int unlink(const char*);
 int fstat(int fd, struct stat*);
@@ -20,7 +20,9 @@ int mkdir(const char*);
 int chdir(const char*);
 int dup(int);
 int getpid(void);
-char* sbrk(int);
+char* brk(int);
+int open(const char*, int);
+
 int sleep(int);
 int uptime(void);
 

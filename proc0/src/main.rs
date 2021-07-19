@@ -96,7 +96,7 @@ fn main() -> i32 {
         // }
         let child = sys_fork();
         if child == 0 {
-            let ret = sys_exec(b"/usertests\0".as_ptr(), &[0 as *const u8], &[0 as *const u8]);
+            let ret = sys_exec(b"/shell\0".as_ptr(), &[0 as *const u8], &[0 as *const u8]);
             if ret != 0  {
                 sys_exit(-1);
             }

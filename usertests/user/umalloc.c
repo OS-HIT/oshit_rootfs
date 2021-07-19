@@ -8,6 +8,9 @@
 
 typedef long Align;
 
+
+extern char* sbrk(int addition);
+
 union header {
   struct {
     union header *ptr;

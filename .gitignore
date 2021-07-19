@@ -1,3 +1,4 @@
 mnt
 temp
 fs.img
+usertests/kernel/syscall.h

@@ -22,6 +22,20 @@
 
 char buf[BUFSZ];
 
+char* sbrk(int addition) {
+	char* original = brk(0);
+	return brk((unsigned long long int)(original) + addition);
+}
+
+
+int open(const char* a1, int a2) {
+  return open_naive(-100, a1, a2);
+}
+
+int wait(int* wstatus) {
+  return waitpid(-1, wstatus, 0);
+}
+
 // what if you pass ridiculous pointers to system calls
 // that read user memory with copyin?
 void
@@ -2672,16 +2686,16 @@ countfree()
     exit(1);
   }
   
-      Log();
+  Log();
   int pid = fork();
 
-      Log();
+  Log();
   if(pid < 0){
     printf("fork failed in countfree()\n");
     exit(1);
   }
 
-      Log();
+  Log();
   if(pid == 0){
     close(fds[0]);
     

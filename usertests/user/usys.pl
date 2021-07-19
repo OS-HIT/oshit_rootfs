@@ -17,14 +17,14 @@ sub entry {
 	
 entry("fork");
 entry("exit");
-entry("wait");
+entry("waitpid");
 entry("pipe");
 entry("read");
 entry("write");
 entry("close");
 entry("kill");
 entry("exec");
-entry("open");
+entry("open_naive");
 entry("mknod");
 entry("unlink");
 entry("fstat");
@@ -33,6 +33,6 @@ entry("mkdir");
 entry("chdir");
 entry("dup");
 entry("getpid");
-entry("sbrk");
+entry("brk");
 entry("sleep");
 entry("uptime");
