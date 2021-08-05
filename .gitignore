@@ -2,3 +2,8 @@ mnt
 temp
 fs.img
 usertests/kernel/syscall.h
+fork_test
+hello_world
+pipe_test
+systime_test
+uname_test
