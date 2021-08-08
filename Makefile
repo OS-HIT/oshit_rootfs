@@ -19,6 +19,8 @@ $(FS_IMG): $(PROG_BINS) $(MOUNT_FOLDER)
 	sudo mount -o loop $(FS_IMG) $(MOUNT_FOLDER)
 	sudo rm -rf $(MOUNT_FOLDER)/*
 	sudo cp -r $(TEMP_FOLDER)/* $(MOUNT_FOLDER)
+	sudo cp busybox/busybox_cmd.txt $(MOUNT_FOLDER)
+	sudo cp busybox/busybox_testcode.sh $(MOUNT_FOLDER)
 	sudo umount $(MOUNT_FOLDER)
 	sudo chmod 777 $(FS_IMG)
 
