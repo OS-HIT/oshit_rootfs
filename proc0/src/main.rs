@@ -5,7 +5,8 @@
 
 #[macro_use]
 extern crate oshit_usrlib;
-
+extern crate alloc;
+use alloc::vec::Vec;
 
 use oshit_usrlib::{print, sys_exec, sys_exit, sys_fork, sys_getpid, sys_waitpid, sys_yield};
 
@@ -67,34 +68,103 @@ use oshit_usrlib::{print, sys_exec, sys_exit, sys_fork, sys_getpid, sys_waitpid,
 //     b"find -name \"busybox_cmd.txt\"\0",
 //     ];
 
+const commands: &'static[&str] = &[
+    "busybox echo \"#### independent command test\"",
+    "busybox ash -c exit",
+    "busybox sh -c exit",
+    "busybox basename /aaa/bbb",
+    "busybox cal",
+    "busybox clear",
+    "busybox date ",
+    "busybox df",
+    "busybox dirname /aaa/bbb",
+    "busybox dmesg ",
+    "busybox du",
+    "busybox expr 1 + 1",
+    "busybox false",
+    "busybox true",
+    "busybox which ls",
+    "busybox uname",
+    "busybox uptime",
+    "busybox printf \"abc\n\"",
+    "busybox ps",
+    "busybox pwd",
+    "busybox free",
+    "busybox hwclock",
+    "busybox kill 10",
+    "busybox ls",
+    "busybox sleep 1", 
+    "busybox echo \"#### file opration test\"",
+    "busybox touch test.txt",
+    "busybox echo \"hello world\" > test.txt",
+    "busybox cat test.txt",
+    "busybox cut -c 3 test.txt",
+    "busybox od test.txt",
+    "busybox head test.txt",
+    "busybox tail test.txt ",
+    "busybox hexdump -C test.txt ",
+    "busybox md5sum test.txt",
+    "busybox echo \"ccccccc\" >> test.txt",
+    "busybox echo \"bbbbbbb\" >> test.txt",
+    "busybox echo \"aaaaaaa\" >> test.txt",
+    "busybox echo \"2222222\" >> test.txt",
+    "busybox echo \"1111111\" >> test.txt",
+    "busybox echo \"bbbbbbb\" >> test.txt",
+    "busybox sort test.txt | ./busybox uniq",
+    "busybox stat test.txt",
+    "busybox strings test.txt ",
+    "busybox wc test.txt",
+    "busybox [ -f test.txt ]",
+    "busybox more test.txt",
+    "busybox rm test.txt",
+    "busybox mkdir test_dir",
+    "busybox mv test_dir test",
+    "busybox rmdir test",
+    "busybox grep hello busybox_cmd.txt",
+    "busybox cp busybox_cmd.txt busybox_cmd.bak",
+    "busybox rm busybox_cmd.bak",
+    "busybox find -name \"busybox_cmd.txt\"",
+];
+
 #[no_mangle]
 fn main() -> i32 {
     let busybox_argv: &[*const u8] = &[
         b"busybox\0".as_ptr(),
+        // b"ls\0".as_ptr(),
         b"sh\0".as_ptr(),
         b"-c\0".as_ptr(),
-        b"./busybox_testcode.sh\0".as_ptr(),
+        // b"./busybox cat ./busybox_cmd.txt\0".as_ptr(),
+        b"./busybox cat ./busybox_cmd.txt | while read line
+        do
+            eval \"./busybox $line\"
+            RTN=$?
+            if [[ $RTN -ne 0 && $line != \"false\" ]] ;then
+                echo \"testcase busybox $line fail\"
+                # echo \"return: $RTN, cmd: $line\" >> $RST
+            else
+                echo \"testcase busybox $line success\"
+            fi
+        done\0".as_ptr(),
+        // b"echo hello world\0".as_ptr(),
         0usize as *const u8
     ];
 
     let busybox_envp: &[*const u8] = &[
-        b"SHELL=/bin/bash\0".as_ptr(),
-        b"PWD=/root/busybox/busybox\0".as_ptr(),
+        // b"SHELL=/bin/bash\0".as_ptr(),
+        b"PWD=/busybox\0".as_ptr(),
         b"LOGNAME=root\0".as_ptr(),
-        b"_=/ust/bin/gdb\0".as_ptr(),
+        b"_=busybox\0".as_ptr(),
         b"MOTD_SHOWN=pam\0".as_ptr(),
         b"LINES=67\0".as_ptr(),
-        b"HOME=/root\0".as_ptr(),
+        b"HOME=/\0".as_ptr(),
         b"LANG=zh_CN.UTF-8\0".as_ptr(),
         b"COLUMNS=138\0".as_ptr(),
-        b"SSH_CONNECTION=10.0.2.2 34236 10.0.2.15 22\0".as_ptr(),
         b"TERM=xterm-256color\0".as_ptr(),
         b"USER=root\0".as_ptr(),
         b"SHLVL=1\0".as_ptr(),
-        b"SSH_CLIENT=10.0.2.2 34236 22\0".as_ptr(),
-        b"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\0".as_ptr(),
-        b"SSH_TTY=/dev/pts/0\0".as_ptr(),
-        b"OLDPWD=/root/busybox\0".as_ptr(),
+        b"PATH=/\0".as_ptr(),
+        // b"SSH_TTY=/dev/tty0\0".as_ptr(),
+        b"OLDPWD=/\0".as_ptr(),
         0usize as *const u8
     ];
 
@@ -133,7 +203,28 @@ fn main() -> i32 {
         //     let mut exit_code: i32 = 0;
         //     sys_waitpid(child, &mut exit_code);
         // }
-        sys_exec(b"/busybox\0".as_ptr(), busybox_argv, busybox_envp);
+        for command in commands {
+            println!("Now executing: {}", command);
+            let words: Vec<&str> = command.split(" ").collect();
+            let words: Vec<Vec<u8>> = words.iter().map(
+                |word| -> Vec<u8> {
+                    let mut res = word.as_bytes().to_vec();
+                    res.push(b'\0');
+                    res
+                }
+            ).collect();
+            let words: Vec<*const u8> = words.iter().map(|word| word.as_ptr()).collect();
+            if sys_fork() == 0 {
+                sys_exec(b"/busybox\0".as_ptr(), &words, busybox_envp);
+            } else {
+                let mut exit_code: i32 = 0;
+                let pid = sys_waitpid(-1, &mut exit_code);
+                if pid == -1 || pid == -2 {
+                    sys_yield();
+                    continue;
+                } 
+            }
+        }
     } else {
         loop {
             let mut exit_code: i32 = 0;

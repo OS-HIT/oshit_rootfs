@@ -11,3 +11,4 @@ oshit_usrlib = { path = "../../oshit_usrlib" }
 
 [features]
 board_qemu = []
+min_log_level_verbose = []

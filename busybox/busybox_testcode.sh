@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/busybox sh
 
 # RST=result.txt
 # if [ -f $RST ];then
