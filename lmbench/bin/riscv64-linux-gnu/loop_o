@@ -1,0 +1,1 @@
+/root/testsuits-for-oskernel/lmbench/bin/riscv64-linux-gnu/lmbench_all loop_o "$@"
